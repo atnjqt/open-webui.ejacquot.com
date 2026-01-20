@@ -1,0 +1,26 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Image": {
+      "Name": "ghcr.io/open-webui/open-webui:main",
+      "Update": "true"
+    },
+    "Ports": [
+      {
+        "ContainerPort": "8080",
+        "HostPort": "3000"
+      }
+    ],
+    "Volumes": [
+      {
+        "HostDirectory": "/app/backend/data",
+        "ContainerDirectory": "/app/backend/data"
+      }
+    ],
+    "Logging": "/var/log/nginx",
+    "HostConfig": {
+      "ExtraHosts": [
+        "host.docker.internal:172.17.0.1"
+      ]
+    },
+    "RestartPolicy": "always"
+}

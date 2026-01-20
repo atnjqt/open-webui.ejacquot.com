@@ -1,0 +1,25 @@
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# Application directories
+data/*
+backup/*
+backup/**
+bedrock-access-gateway/*
+
+# Configurations
+.env
+.venv
+.venv/*
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# App dir
+app/backup/*
+app/data/*
