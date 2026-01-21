@@ -37,6 +37,19 @@ eb deploy --profile=atn-developer
 
 ## Run locally
 
+- You can use the `eb cli` to run a version of the Docker container locally
 ```bash
 eb local run
 ```
+
+### Using Docker
+
+- you can emulate the Beanstalk environment variables for a local open-webui container by using a `.env` file
+
+```bash
+docker compose up
+```
+
+### SSO Authentication
+
+- using both Google Cloud and GitHub for single sign-on (SSO) authentication OAUTH integration with open-webui
