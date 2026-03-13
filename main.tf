@@ -10,7 +10,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-1"
+  region  = "eu-south-2"
   profile = "atn-developer"
 }
 
@@ -22,18 +22,18 @@ resource "aws_elastic_beanstalk_application" "eb_app" {
 resource "aws_elastic_beanstalk_environment" "eb_app_env" {
   name                = "etienne-app-env"
   application         = aws_elastic_beanstalk_application.eb_app.name
-  solution_stack_name = "64bit Amazon Linux 2023 v4.9.1 running Docker"
+  solution_stack_name = "64bit Amazon Linux 2023 v4.11.0 running Docker"
   
   setting {
     namespace   = "aws:autoscaling:launchconfiguration"
     name        = "IamInstanceProfile"
     value       = "aws-elasticbeanstalk-ec2-role"
   }
-  setting {
-    namespace   = "aws:autoscaling:launchconfiguration"
-    name        = "EC2KeyName"
-    value       = "etienne-eb-key"  # Change this to your actual key pair name
-  }
+  #setting {
+  #  namespace   = "aws:autoscaling:launchconfiguration"
+  #  name        = "EC2KeyName"
+  #  value       = "etienne-eb-key"  # Change this to your actual key pair name
+  #}
   setting {
     namespace   = "aws:autoscaling:launchconfiguration"
     name        = "DisableIMDSv1"
@@ -87,7 +87,7 @@ resource "aws_elastic_beanstalk_environment" "eb_app_env" {
   setting {
     namespace = "aws:elbv2:listener:443"
     name      = "SSLCertificateArns"
-    value     = "arn:aws:acm:us-east-1:579747246975:certificate/af4c521f-09a5-47ef-b931-4836e67cd03a"
+    value     = "arn:aws:acm:eu-south-2:579747246975:certificate/7a5348fe-7b91-4e7d-b8d5-48ec3f7f6094"
   }
 
   # Keep HTTP listener enabled for redirect
@@ -104,14 +104,12 @@ data "aws_route53_zone" "ejacquot" {
   private_zone = false
 }
 
+
+
 resource "aws_route53_record" "eb_dns" {
   zone_id = data.aws_route53_zone.ejacquot.id
   name    = "open-webui.ejacquot.com"
-  type    = "A"
-
-  alias {
-    name                   = aws_elastic_beanstalk_environment.eb_app_env.cname
-    zone_id                = "Z117KPS5GTRQ2G"  # Elastic Beanstalk zone ID for us-east-1
-    evaluate_target_health = false
-  }
+  type    = "CNAME"
+  ttl     = 300
+  records = [aws_elastic_beanstalk_environment.eb_app_env.cname]
 }
