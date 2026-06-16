@@ -10,7 +10,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = "eu-south-2"
+  region  = "us-east-1"
   profile = "atn-developer"
 }
 
@@ -87,7 +87,7 @@ resource "aws_elastic_beanstalk_environment" "eb_app_env" {
   setting {
     namespace = "aws:elbv2:listener:443"
     name      = "SSLCertificateArns"
-    value     = "arn:aws:acm:eu-south-2:579747246975:certificate/7a5348fe-7b91-4e7d-b8d5-48ec3f7f6094"
+    value     = "arn:aws:acm:us-east-1:579747246975:certificate/af4c521f-09a5-47ef-b931-4836e67cd03a"
   }
 
   # Keep HTTP listener enabled for redirect
