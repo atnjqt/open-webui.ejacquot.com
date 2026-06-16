@@ -22,8 +22,7 @@ resource "aws_elastic_beanstalk_application" "eb_app" {
 resource "aws_elastic_beanstalk_environment" "eb_app_env" {
   name                = "etienne-app-env"
   application         = aws_elastic_beanstalk_application.eb_app.name
-  solution_stack_name = "64bit Amazon Linux 2023 v4.11.0 running Docker"
-  
+  solution_stack_name = "64bit Amazon Linux 2023 v4.13.2 running Docker"
   setting {
     namespace   = "aws:autoscaling:launchconfiguration"
     name        = "IamInstanceProfile"
