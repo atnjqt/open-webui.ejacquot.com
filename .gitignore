@@ -20,6 +20,7 @@ bedrock-access-gateway/*
 *.tfstate.*
 .terraform/
 *.lock.hcl
+terraform.tfvars
 
 # App dir
 app/backup/*

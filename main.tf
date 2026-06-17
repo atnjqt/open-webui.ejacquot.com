@@ -10,23 +10,23 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-1"
-  profile = "atn-developer"
+  region  = var.aws_region
+  profile = var.aws_profile
 }
 
 resource "aws_elastic_beanstalk_application" "eb_app" {
-  name        = "chat-etienne-app"
-  description = "Open Web-UI application for Etienne"
+  name        = var.app_name
+  description = var.app_description
 }
 
 resource "aws_elastic_beanstalk_environment" "eb_app_env" {
-  name                = "etienne-app-env"
+  name                = var.environment_name
   application         = aws_elastic_beanstalk_application.eb_app.name
-  solution_stack_name = "64bit Amazon Linux 2023 v4.13.2 running Docker"
+  solution_stack_name = var.solution_stack_name
   setting {
     namespace   = "aws:autoscaling:launchconfiguration"
     name        = "IamInstanceProfile"
-    value       = "aws-elasticbeanstalk-ec2-role"
+    value       = var.instance_profile
   }
   #setting {
   #  namespace   = "aws:autoscaling:launchconfiguration"
@@ -41,17 +41,17 @@ resource "aws_elastic_beanstalk_environment" "eb_app_env" {
   setting {
     namespace   = "aws:autoscaling:launchconfiguration"
     name        = "RootVolumeSize"
-    value       = "40"
+    value       = var.root_volume_size
   }
   setting { 
     namespace   = "aws:autoscaling:asg"
     name        = "MinSize"
-    value       = "1"
+    value       = var.min_instances
   }
   setting {
     namespace   = "aws:autoscaling:asg"
     name        = "MaxSize"
-    value       = "1"
+    value       = var.max_instances
   }
   setting {
     namespace   = "aws:elasticbeanstalk:environment"
@@ -67,7 +67,7 @@ resource "aws_elastic_beanstalk_environment" "eb_app_env" {
   setting {
     namespace   = "aws:ec2:instances"
     name        = "InstanceTypes"
-    value       = "c6gd.medium"
+    value       = var.instance_type
   }
 
   setting {
@@ -86,7 +86,7 @@ resource "aws_elastic_beanstalk_environment" "eb_app_env" {
   setting {
     namespace = "aws:elbv2:listener:443"
     name      = "SSLCertificateArns"
-    value     = "arn:aws:acm:us-east-1:579747246975:certificate/af4c521f-09a5-47ef-b931-4836e67cd03a"
+    value     = var.ssl_certificate_arn
   }
 
   # Keep HTTP listener enabled for redirect
@@ -98,16 +98,16 @@ resource "aws_elastic_beanstalk_environment" "eb_app_env" {
 }
 
 # Reference the existing hosted zone for ejacquot.com
-data "aws_route53_zone" "ejacquot" {
-  name         = "ejacquot.com."
+data "aws_route53_zone" "main" {
+  name         = var.hosted_zone_name
   private_zone = false
 }
 
 
 
 resource "aws_route53_record" "eb_dns" {
-  zone_id = data.aws_route53_zone.ejacquot.id
-  name    = "open-webui.ejacquot.com"
+  zone_id = data.aws_route53_zone.main.id
+  name    = "${var.subdomain}.${trimsuffix(var.hosted_zone_name, ".")}"
   type    = "CNAME"
   ttl     = 300
   records = [aws_elastic_beanstalk_environment.eb_app_env.cname]
